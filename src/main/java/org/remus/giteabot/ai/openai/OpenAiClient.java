@@ -30,7 +30,11 @@ import java.util.Map;
 @Slf4j
 public class OpenAiClient extends AbstractAiClient {
 
+    /** Path appended to the integration's API URL unless a provider passes its own. */
+    public static final String DEFAULT_CHAT_COMPLETIONS_PATH = "/v1/chat/completions";
+
     private final RestClient restClient;
+    private final String chatCompletionsPath;
     private final boolean nativeToolsEnabled;
     private final OpenAiFlavor flavor;
     /**
@@ -45,8 +49,21 @@ public class OpenAiClient extends AbstractAiClient {
     public OpenAiClient(RestClient restClient, String model, int maxTokens,
                         boolean nativeToolsEnabled, OpenAiFlavor flavor,
                         Map<String, Object> chatTemplateKwargs) {
+        this(restClient, model, maxTokens, nativeToolsEnabled, flavor, chatTemplateKwargs,
+                DEFAULT_CHAT_COMPLETIONS_PATH);
+    }
+
+    /**
+     * For OpenAI-compatible providers whose API root already contains the
+     * version segment, e.g. {@code /chat/completions} below
+     * {@code https://api.opper.ai/v3/compat}.
+     */
+    public OpenAiClient(RestClient restClient, String model, int maxTokens,
+                        boolean nativeToolsEnabled, OpenAiFlavor flavor,
+                        Map<String, Object> chatTemplateKwargs, String chatCompletionsPath) {
         super(model, maxTokens);
         this.restClient = restClient;
+        this.chatCompletionsPath = chatCompletionsPath;
         this.nativeToolsEnabled = nativeToolsEnabled;
         this.flavor = flavor == null ? OpenAiFlavor.STANDARD : flavor;
         this.chatTemplateKwargs = chatTemplateKwargs;
@@ -271,7 +288,7 @@ public class OpenAiClient extends AbstractAiClient {
 
     private OpenAiResponse executeRequest(OpenAiRequest request) {
         return restClient.post()
-                .uri("/v1/chat/completions")
+                .uri(chatCompletionsPath)
                 .body(request)
                 .retrieve()
                 .body(OpenAiResponse.class);

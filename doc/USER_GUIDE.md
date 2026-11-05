@@ -2,7 +2,7 @@
 
 ## Overview
 
-AI-Git-Bot is a **Gateway application** that provides a web-based management interface for creating and managing AI-powered code review bots. Each bot connects an AI provider (Anthropic, OpenAI, OpenRouter, Google AI, Ollama, or llama.cpp) with a Git provider (Gitea, GitHub, GitHub Enterprise, GitLab, Bitbucket Cloud, or Azure DevOps) and has its own unique webhook URL. The Gateway architecture allows you to manage multiple bots with different configurations across different Git platforms — all from a single dashboard.
+AI-Git-Bot is a **Gateway application** that provides a web-based management interface for creating and managing AI-powered code review bots. Each bot connects an AI provider (Anthropic, OpenAI, OpenRouter, Opper, Google AI, Ollama, or llama.cpp) with a Git provider (Gitea, GitHub, GitHub Enterprise, GitLab, Bitbucket Cloud, or Azure DevOps) and has its own unique webhook URL. The Gateway architecture allows you to manage multiple bots with different configurations across different Git platforms — all from a single dashboard.
 
 Besides classic pull-request review bots, AI-Git-Bot also supports **issue-based agent workflows** and **opt-in PR workflows**:
 
@@ -88,6 +88,7 @@ AI Integrations define connections to AI providers. Navigate to **AI Integration
      | Anthropic | `https://api.anthropic.com` | claude-fable-5-1, claude-opus-5-5, claude-sonnet-5-5, claude-haiku-5-5 |
      | OpenAI | `https://api.openai.com` | gpt-6-astra, gpt-6.1-sol, gpt-6-luna |
      | OpenRouter | `https://openrouter.ai/api` | `openrouter/auto`, `deepseek/deepseek-v4.1-flash`, `z-ai/glm-5.3-flash`, `xiaomi/mimo-v2.6-flash` |
+     | Opper | `https://api.opper.ai/v3/compat` | claude-sonnet-5-5, gpt-6.1-sol, gemini-3.8-flash, deepseek-v4.1-flash |
      | Google Gemini | `https://generativelanguage.googleapis.com` | gemini-4-argon, gemini-3.8-flash, gemini-3.5-flash-lite |
      | Ollama | `http://localhost:11434` | *(user-configured)* |
      | llama.cpp | `http://localhost:8081` | *(user-configured)* |
@@ -96,7 +97,7 @@ AI Integrations define connections to AI providers. Navigate to **AI Integration
    - **API Key**: Your API key (encrypted at rest when `APP_ENCRYPTION_KEY` is configured; not needed for Ollama or llama.cpp)
    - **API Version**: API version string (Anthropic only, e.g., `2023-06-01`)
    - **Model**: Select from the dropdown for suggested models, or type a custom model name
-   - **Model Flavor**: Shown only for providers that offer flavors (currently OpenAI); available flavors are listed under the field. See the OpenAI-compatible section for details.
+   - **Model Flavor**: Shown only for providers that offer flavors (currently OpenAI and Opper); available flavors are listed under the field. See the OpenAI-compatible section for details.
    - **Max Tokens**: Maximum tokens per AI response, used for reviews and comment replies (default: 16000 for hosted providers, 4096 for Ollama and llama.cpp)
    - **Parallel Worker Limit**: Maximum number of jobs that may run at the same time for this integration (`0` = unlimited, `1`–`20` = cap). See [Parallel worker limit](#parallel-worker-limit)
    - **Context Window (tokens)**: The model's total context window, used for proactive history compaction
@@ -115,7 +116,7 @@ Diff chunking for reviews (**Max diff chars per chunk**, **Max diff chunks**, **
 - Requires an API key
 - Compatible with OpenAI API proxies by changing the API URL
 - Suggested models: gpt-6-astra (flagship), gpt-6.1-sol (balanced), gpt-6-luna (fastest)
-- **Model Flavor** (this provider only): `Standard` sends no extra request fields. `No reasoning effort` sends `reasoning_effort: "none"` — use it when a gateway in front of the model (e.g. for `gpt-6-luna`) injects a default `reasoning_effort` and the provider rejects function tools on `/v1/chat/completions`
+- **Model Flavor** (OpenAI and Opper): `Standard` sends no extra request fields. `No reasoning effort` sends `reasoning_effort: "none"` — use it when a gateway in front of the model (e.g. for `gpt-6-luna`) injects a default `reasoning_effort` and the provider rejects function tools on `/v1/chat/completions`
 
 #### OpenRouter
 
@@ -130,6 +131,14 @@ Diff chunking for reviews (**Max diff chars per chunk**, **Max diff chunks**, **
 - Requests use `max_tokens`; the generic OpenAI integration continues to use `max_completion_tokens`. The `standard` flavor leaves reasoning at the provider default. Unsupported explicit flavors are rejected.
 - Native tool continuations preserve opaque `reasoning_details` in memory, separately from visible answers and session history. The existing, explicitly enabled `AI_USAGE_RAW_PAYLOADS_ENABLED` audit option also captures these provider payloads; it is off by default.
 - A key-check HTTP 401 means the key was rejected. Inference HTTP 402/429 indicates credit/rate limits; check the account. Inference HTTP 404 can indicate an unavailable model or route under the selected policy. Provider response bodies are not exposed in errors.
+
+#### Opper
+
+- [Opper](https://opper.ai) is a European AI gateway with 700+ models from 50+ providers behind one OpenAI-compatible API and one key. Create a key at [platform.opper.ai](https://platform.opper.ai).
+- Requires an API key, sent as a Bearer token
+- Requests go to `/chat/completions` below the API URL `https://api.opper.ai/v3/compat` and use the same request format as the OpenAI integration, including native tool calls
+- Suggested models: claude-sonnet-5-5, gpt-6.1-sol, gemini-3.8-flash, deepseek-v4.1-flash. Any model name from the [Opper model list](https://opper.ai/models) works; a `provider/model` name such as `anthropic/claude-sonnet-5-5` pins one provider
+- **Model Flavor**: the same `Standard` and `No reasoning effort` flavors as the OpenAI integration
 
 #### Google AI
 - Requires a Gemini API key from Google AI Studio; the key is encrypted at rest when `APP_ENCRYPTION_KEY` is configured

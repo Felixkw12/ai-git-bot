@@ -49,7 +49,7 @@ Values that need explaining:
   as well as `sshPrivateKey` + `sshKnownHosts`. Both secrets are stored encrypted. When you
   switch an integration away from SSH, its key and known-hosts are dropped.
 - **`aiIntegrations`.** `providerType` is the enum constant, upper case: `OPENAI`, `ANTHROPIC`,
-  `GOOGLE`, `OLLAMA`, `LLAMACPP`, `OPENROUTER` — the same value the `provider_type` column holds
+  `GOOGLE`, `OLLAMA`, `LLAMACPP`, `OPENROUTER`, `OPPER` — the same value the `provider_type` column holds
   and the admin UI's provider select posts, so a lower-case `openai` fails the import. The
   `openRouter*` fields (`region`: `GLOBAL` | `EU` | `US`, `dataCollection`: `DENY` | `ALLOW`,
   `zdr`) are read by the `OPENROUTER` provider only; the same applies to `apiVersion`, which

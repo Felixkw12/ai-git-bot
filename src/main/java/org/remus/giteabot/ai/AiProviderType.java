@@ -11,7 +11,8 @@ public enum AiProviderType {
     LLAMACPP("llama.cpp"),
     OLLAMA("Ollama"),
     OPENAI("OpenAI"),
-    OPENROUTER("OpenRouter");
+    OPENROUTER("OpenRouter"),
+    OPPER("Opper");
 
     private final String displayName;
 
