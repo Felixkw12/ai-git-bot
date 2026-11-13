@@ -134,7 +134,7 @@ Diff chunking for reviews (**Max diff chars per chunk**, **Max diff chunks**, **
 
 #### Opper
 
-- [Opper](https://opper.ai) is a European AI gateway with 700+ models from 50+ providers behind one OpenAI-compatible API and one key. Create a key at [platform.opper.ai](https://platform.opper.ai).
+- [Opper](https://opper.ai) is a European AI gateway with 700+ models from 70+ providers behind one OpenAI-compatible API and one key. Create a key at [platform.opper.ai](https://platform.opper.ai).
 - Requires an API key, sent as a Bearer token
 - Requests go to `/chat/completions` below the API URL `https://api.opper.ai/v3/compat` and use the same request format as the OpenAI integration, including native tool calls
 - Suggested models: claude-sonnet-5-5, gpt-6.1-sol, gemini-3.8-flash, deepseek-v4.1-flash. Any model name from the [Opper model list](https://opper.ai/models) works; a `provider/model` name such as `anthropic/claude-sonnet-5-5` pins one provider
